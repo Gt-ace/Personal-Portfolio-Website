@@ -27,15 +27,27 @@ const ParticleBackground = () => {
       if (!canvas) return;
       
       const particles: any[] = [];
-      const particleCount = Math.min(Math.floor(window.innerWidth / 15), 120);
+      const particleCount = Math.min(Math.floor(window.innerWidth / 20), 100); // Reduced particle count
+      
+      // Ensure even distribution and avoid clustering
+      const gridSize = Math.sqrt(particleCount);
+      const cellWidth = canvas.width / gridSize;
+      const cellHeight = canvas.height / gridSize;
       
       for (let i = 0; i < particleCount; i++) {
+        // Add randomness but maintain spacing to avoid clusters
+        const gridX = i % gridSize;
+        const gridY = Math.floor(i / gridSize);
+        
+        const x = (gridX * cellWidth) + (Math.random() * cellWidth * 0.8 + cellWidth * 0.1);
+        const y = (gridY * cellHeight) + (Math.random() * cellHeight * 0.8 + cellHeight * 0.1);
+        
         particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
+          x: x,
+          y: y,
           size: Math.random() * 1.5 + 0.5,
-          speedX: Math.random() * 0.5 - 0.25,
-          speedY: Math.random() * 0.5 - 0.25,
+          speedX: Math.random() * 0.3 - 0.15, // Slower speed
+          speedY: Math.random() * 0.3 - 0.15, // Slower speed
           opacity: Math.random() * 0.5 + 0.1
         });
       }
@@ -57,13 +69,13 @@ const ParticleBackground = () => {
         p.x += p.speedX;
         p.y += p.speedY;
         
-        // Mouse influence (subtle movement)
+        // Mouse influence (more subtle movement)
         const distX = mousePosition.x - p.x;
         const distY = mousePosition.y - p.y;
         const distance = Math.sqrt(distX * distX + distY * distY);
         
         if (distance < 150) {
-          const influence = (150 - distance) / 15000;
+          const influence = (150 - distance) / 25000; // Reduced influence
           p.x += distX * influence;
           p.y += distY * influence;
         }
@@ -81,20 +93,28 @@ const ParticleBackground = () => {
         ctx.fill();
       }
       
-      // Draw lines between nearby particles
+      // Draw lines between nearby particles (with reduced intensity)
       for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
+        // Limit connections to nearest neighbors to improve performance and reduce clustering
+        let connections = 0;
+        const maxConnections = 3; // Limit connections per particle
+        
+        for (let j = 0; j < particles.length; j++) {
+          if (i === j) continue;
+          
           const p1 = particles[i];
           const p2 = particles[j];
           const dx = p1.x - p2.x;
           const dy = p1.y - p2.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
-          if (distance < 100) {
+          if (distance < 120 && connections < maxConnections) {
+            connections++;
             ctx.beginPath();
             ctx.moveTo(p1.x, p1.y);
             ctx.lineTo(p2.x, p2.y);
-            ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 * (1 - distance / 100)})`;
+            // Reduced opacity for more subtle lines
+            ctx.strokeStyle = `rgba(255, 255, 255, ${0.08 * (1 - distance / 120)})`;
             ctx.stroke();
           }
         }
