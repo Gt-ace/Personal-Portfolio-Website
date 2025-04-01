@@ -19,17 +19,17 @@ const ContactItem = ({
       href={href} 
       target="_blank" 
       rel="noopener noreferrer"
-      className="contact-item bg-[#1a1a1a] flex flex-col items-center justify-center p-10 rounded-lg border border-gray-800 hover:border-gray-700 transition duration-300"
+      className="contact-item bg-[#1a1a1a] flex flex-col items-center justify-center p-12 rounded-lg border border-gray-800 hover:border-gray-700 transition duration-300 h-[250px]"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 + (delay * 0.1), duration: 0.6 }}
       whileHover={{ y: -5 }}
     >
-      <div className="icon-container p-4 mb-4 rounded-full bg-gray-800">
-        <i className={`${icon} text-xl`}></i>
+      <div className="icon-container p-5 mb-5 rounded-full bg-gray-800">
+        <i className={`${icon} text-2xl`}></i>
       </div>
-      <p className="text-center font-medium mb-2">{platform}</p>
-      <p className="text-gray-400 text-sm text-center break-all">{username}</p>
+      <p className="text-center font-medium mb-3 text-lg">{platform}</p>
+      <p className="text-gray-400 text-base text-center break-all">{username}</p>
     </motion.a>
   );
 };
@@ -39,7 +39,7 @@ const Contact = () => {
     {
       icon: "fab fa-linkedin",
       platform: "LinkedIn",
-      username: "arthur-van-petegem",
+      username: "Arthur Van Petegem",
       href: "https://www.linkedin.com/in/arthur-van-petegem-7b72b1323/"
     },
     {

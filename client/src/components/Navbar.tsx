@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useLocation } from "wouter";
+import { useLocation } from "wouter";
 import { motion } from "framer-motion";
 
 const Navbar = () => {
@@ -30,30 +30,36 @@ const Navbar = () => {
       animate={{ opacity: 1 }}
       transition={{ delay: 0.2, duration: 0.8 }}
     >
-      <Link href="/">
-        <a 
-          className={`text-white hover:text-gray-300 transition duration-300 ${currentPage === "home" ? "font-medium" : ""}`}
-          onClick={() => handleNavClick("home", "/")}
-        >
-          Home
-        </a>
-      </Link>
-      <Link href="/projects">
-        <a 
-          className={`text-white hover:text-gray-300 transition duration-300 ${currentPage === "projects" ? "font-medium" : ""}`}
-          onClick={() => handleNavClick("projects", "/projects")}
-        >
-          Projects
-        </a>
-      </Link>
-      <Link href="/contact">
-        <a 
-          className={`text-white hover:text-gray-300 transition duration-300 ${currentPage === "contact" ? "font-medium" : ""}`}
-          onClick={() => handleNavClick("contact", "/contact")}
-        >
-          Contact
-        </a>
-      </Link>
+      <a 
+        href="/"
+        className={`text-white hover:text-gray-300 transition duration-300 ${currentPage === "home" ? "font-medium" : ""}`}
+        onClick={(e) => {
+          e.preventDefault();
+          handleNavClick("home", "/");
+        }}
+      >
+        Home
+      </a>
+      <a 
+        href="/projects"
+        className={`text-white hover:text-gray-300 transition duration-300 ${currentPage === "projects" ? "font-medium" : ""}`}
+        onClick={(e) => {
+          e.preventDefault();
+          handleNavClick("projects", "/projects");
+        }}
+      >
+        Projects
+      </a>
+      <a 
+        href="/contact"
+        className={`text-white hover:text-gray-300 transition duration-300 ${currentPage === "contact" ? "font-medium" : ""}`}
+        onClick={(e) => {
+          e.preventDefault();
+          handleNavClick("contact", "/contact");
+        }}
+      >
+        Contact
+      </a>
     </motion.nav>
   );
 };
