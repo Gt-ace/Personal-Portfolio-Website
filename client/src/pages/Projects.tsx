@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ExternalLink, Github, ChevronLeft, ChevronRight } from "lucide-react";
 import BackArrow from "@/components/BackArrow";
@@ -35,8 +35,28 @@ const projects: Project[] = [
   },
 ];
 
+const AUTO_ROTATE_MS = 6000;
+
 const ImageCarousel = ({ images }: { images: string[] }) => {
   const [current, setCurrent] = useState(0);
+  const [resetKey, setResetKey] = useState(0);
+
+  const advance = useCallback(
+    () => setCurrent((p) => (p + 1) % images.length),
+    [images.length],
+  );
+
+  // Auto-rotate; restarts whenever the user interacts (resetKey changes)
+  useEffect(() => {
+    if (images.length <= 1) return;
+    const id = setInterval(advance, AUTO_ROTATE_MS);
+    return () => clearInterval(id);
+  }, [images.length, advance, resetKey]);
+
+  const go = (next: number) => {
+    setCurrent(next);
+    setResetKey((k) => k + 1); // restart timer on manual nav
+  };
 
   if (images.length === 0) {
     return (
@@ -69,20 +89,20 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 1.2 }}
         />
       </AnimatePresence>
 
       {/* Nav arrows */}
       <button
-        onClick={() => setCurrent((p) => (p - 1 + images.length) % images.length)}
+        onClick={() => go((current - 1 + images.length) % images.length)}
         className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-black/80"
         aria-label="Previous image"
       >
         <ChevronLeft className="w-4 h-4 text-white" />
       </button>
       <button
-        onClick={() => setCurrent((p) => (p + 1) % images.length)}
+        onClick={() => go((current + 1) % images.length)}
         className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 cursor-pointer hover:bg-black/80"
         aria-label="Next image"
       >
@@ -94,7 +114,7 @@ const ImageCarousel = ({ images }: { images: string[] }) => {
         {images.map((_, i) => (
           <button
             key={i}
-            onClick={() => setCurrent(i)}
+            onClick={() => go(i)}
             className={`w-1.5 h-1.5 rounded-full transition-all duration-200 cursor-pointer ${
               i === current ? "bg-white w-4" : "bg-white/40 hover:bg-white/60"
             }`}
@@ -115,15 +135,25 @@ const ProjectCard = ({
 }) => {
   return (
     <motion.div
-      className="group bg-[#161616] rounded-xl overflow-hidden border border-white/[0.06] hover:border-white/[0.12] transition-colors duration-300"
+      className="group relative bg-[#161616] rounded-xl overflow-hidden border border-white/[0.06] cursor-pointer"
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
+      whileHover={{
+        y: -6,
+        borderColor: "rgba(255,255,255,0.15)",
+      }}
+      whileTap={{ scale: 0.985, y: -2 }}
       transition={{ delay: 0.15 + index * 0.12, duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
     >
+      {/* Top-edge glow on hover */}
+      <motion.div
+        className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+      />
+
       <ImageCarousel images={project.images} />
 
       <div className="p-5 space-y-4">
-        <h3 className="text-lg font-semibold text-white leading-tight">
+        <h3 className="text-lg font-semibold text-white leading-tight group-hover:text-white/95 transition-colors duration-200">
           {project.title}
         </h3>
 
@@ -133,37 +163,45 @@ const ProjectCard = ({
 
         <div className="flex flex-wrap gap-2">
           {project.tech.map((t) => (
-            <span
+            <motion.span
               key={t}
-              className="text-xs px-2.5 py-1 rounded-full bg-white/[0.06] text-gray-300 border border-white/[0.06]"
+              className="text-xs px-2.5 py-1 rounded-full bg-white/[0.06] text-gray-300 border border-white/[0.06] group-hover:border-white/[0.1] group-hover:bg-white/[0.08] transition-all duration-300"
+              whileHover={{ scale: 1.05 }}
+              transition={{ type: "spring", stiffness: 400, damping: 20 }}
             >
               {t}
-            </span>
+            </motion.span>
           ))}
         </div>
 
         <div className="flex gap-3 pt-1">
           {project.url && (
-            <a
+            <motion.a
               href={project.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white cursor-pointer"
+              whileHover={{ x: 2 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
             >
               <ExternalLink className="w-3.5 h-3.5" />
               Visit
-            </a>
+            </motion.a>
           )}
           {project.github && (
-            <a
+            <motion.a
               href={project.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white transition-colors duration-200 cursor-pointer"
+              className="inline-flex items-center gap-1.5 text-sm text-gray-400 hover:text-white cursor-pointer"
+              whileHover={{ x: 2 }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+              onClick={(e) => e.stopPropagation()}
             >
               <Github className="w-3.5 h-3.5" />
               Source
-            </a>
+            </motion.a>
           )}
         </div>
       </div>

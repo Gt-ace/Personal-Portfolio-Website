@@ -6,7 +6,6 @@ const Navbar = () => {
   const [, setLocation] = useLocation();
   const [currentPage, setCurrentPage] = useState("home");
 
-  // Check current page on mount and when location changes
   useEffect(() => {
     const path = window.location.pathname;
     if (path === "/") {
@@ -23,43 +22,46 @@ const Navbar = () => {
     setLocation(path);
   };
 
+  const links = [
+    { page: "home", path: "/", label: "Home" },
+    { page: "projects", path: "/projects", label: "Projects" },
+    { page: "contact", path: "/contact", label: "Contact" },
+  ];
+
   return (
-    <motion.nav 
-      className="fixed top-0 right-0 z-50 flex items-center gap-6 p-6 text-sm md:text-base"
+    <motion.nav
+      className="fixed top-0 right-0 z-50 flex items-center gap-1 p-6 text-sm md:text-base"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: 0.2, duration: 0.8 }}
     >
-      <a 
-        href="/"
-        className={`text-white hover:text-gray-300 transition duration-300 ${currentPage === "home" ? "font-medium" : ""}`}
-        onClick={(e) => {
-          e.preventDefault();
-          handleNavClick("home", "/");
-        }}
-      >
-        Home
-      </a>
-      <a 
-        href="/projects"
-        className={`text-white hover:text-gray-300 transition duration-300 ${currentPage === "projects" ? "font-medium" : ""}`}
-        onClick={(e) => {
-          e.preventDefault();
-          handleNavClick("projects", "/projects");
-        }}
-      >
-        Projects
-      </a>
-      <a 
-        href="/contact"
-        className={`text-white hover:text-gray-300 transition duration-300 ${currentPage === "contact" ? "font-medium" : ""}`}
-        onClick={(e) => {
-          e.preventDefault();
-          handleNavClick("contact", "/contact");
-        }}
-      >
-        Contact
-      </a>
+      {links.map(({ page, path, label }) => (
+        <motion.a
+          key={page}
+          href={path}
+          className={`relative px-3 py-1.5 rounded-md cursor-pointer transition-colors duration-200 ${
+            currentPage === page
+              ? "text-white font-medium"
+              : "text-gray-400 hover:text-white"
+          }`}
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
+          transition={{ type: "spring", stiffness: 400, damping: 20 }}
+          onClick={(e) => {
+            e.preventDefault();
+            handleNavClick(page, path);
+          }}
+        >
+          {currentPage === page && (
+            <motion.div
+              className="absolute inset-0 bg-white/[0.08] rounded-md"
+              layoutId="nav-active"
+              transition={{ type: "spring", stiffness: 350, damping: 30 }}
+            />
+          )}
+          <span className="relative z-10">{label}</span>
+        </motion.a>
+      ))}
     </motion.nav>
   );
 };

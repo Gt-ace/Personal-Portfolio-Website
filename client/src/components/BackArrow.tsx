@@ -3,13 +3,14 @@ import { motion } from "framer-motion";
 
 const BackArrow = () => {
   const [, setLocation] = useLocation();
-  
+
   return (
-    <motion.a 
+    <motion.a
       href="/"
-      className="text-white hover:text-gray-300 mr-4 inline-flex items-center"
-      whileHover={{ x: -2 }}
-      transition={{ duration: 0.2 }}
+      className="text-white hover:text-gray-300 mr-4 inline-flex items-center cursor-pointer"
+      whileHover={{ x: -4, scale: 1.1 }}
+      whileTap={{ scale: 0.9, x: -6 }}
+      transition={{ type: "spring", stiffness: 400, damping: 17 }}
       onClick={(e) => {
         e.preventDefault();
         setLocation("/");

@@ -40,3 +40,16 @@ Dark mode by default (`theme.json`: appearance "dark", variant "professional", p
 - React Query manages server state; `getQueryFn()` is a typed fetch wrapper
 - wouter handles client routing (lightweight, not react-router)
 - Server logging middleware auto-logs all `/api` requests with status codes
+
+## Interaction Design
+
+All interactive elements must feel alive and premium. When adding or modifying buttons, cards, links, or any clickable element, always apply:
+
+- **Spring physics**: Use Framer Motion `type: "spring"` with `stiffness: 300–400`, `damping: 15–20` — never use linear or duration-based transitions for interactions.
+- **Hover lift**: Cards and large clickables lift on hover (`y: -4` to `-6`) with a subtle border brighten (`white/[0.06]` → `white/[0.15]`).
+- **Tap response**: Every clickable must have `whileTap` — scale down to `0.95–0.98` for a satisfying press feel.
+- **Glow accents**: Cards use a top-edge gradient glow (`from-transparent via-white/20 to-transparent`) that appears on hover.
+- **Link nudge**: Text links shift right (`x: 2`) on hover with spring physics.
+- **Navbar active indicator**: Uses Framer Motion `layoutId` for an animated pill that slides between active nav items.
+- **Tech tags**: Subtle `scale: 1.05` on hover with background/border brighten.
+- **No dead elements**: If it's clickable, it must visibly react to hover and press. Static-looking buttons are not acceptable.
