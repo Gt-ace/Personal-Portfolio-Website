@@ -18,6 +18,14 @@ interface Project {
 
 const projects: Project[] = [
   {
+    title: "START Summit — Volunteer Platform",
+    description:
+      "A full-stack volunteer management platform built for START Summit x Hack 2027, handling 600+ volunteers with role assignment, shift scheduling, team management, and event-day operations. Features a mobile-first dark UI with glassmorphism design, Better Auth integration, a multi-step registration flow, and n8n webhook automation.",
+    tech: ["Next.js 16", "TypeScript", "Tailwind CSS v4", "Drizzle ORM", "PostgreSQL", "Better Auth", "n8n"],
+    url: "https://volunteer.startglobal.org",
+    images: [],
+  },
+  {
     title: "Summit x Hack 2026 — Inventory Management",
     description:
       "A real-time inventory management system built for START Summit x Hack 2026, enabling volunteers to request supplies via QR code while coordinators and runners fulfill and deliver orders — replacing ad-hoc logistics with a structured, live-updating workflow.",
