@@ -1,28 +1,41 @@
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import { ArrowUpRight } from "lucide-react";
 import type { Project } from "@/data/projects";
 
 interface ProjectCardProps {
   project: Project;
   onOpen: (project: Project) => void;
+  /** True while the journey ball is dwelling on this project (highlight it). */
+  active?: boolean;
 }
 
 /**
  * A medium card on the project journey. Clicking it opens the preview.
- * Entrance animation is owned by the parent node; this handles hover and press.
+ * Entrance animation is owned by the parent node; this handles hover, press,
+ * and the active highlight that fires while the scroll ball dwells on it.
  */
-const ProjectCard = ({ project, onOpen }: ProjectCardProps) => {
+const ProjectCard = ({ project, onOpen, active = false }: ProjectCardProps) => {
+  const reduce = useReducedMotion();
   return (
     <motion.button
       type="button"
       onClick={() => onOpen(project)}
       className="group relative block w-full overflow-hidden rounded-2xl border border-white/[0.07] bg-[#161618] text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/40"
+      animate={
+        active
+          ? { scale: reduce ? 1 : 1.03, borderColor: "rgba(255,255,255,0.22)" }
+          : { scale: 1, borderColor: "rgba(255,255,255,0.07)" }
+      }
       whileHover={{ y: -6, borderColor: "rgba(255,255,255,0.16)" }}
       whileTap={{ scale: 0.985, y: -2 }}
       transition={{ type: "spring", stiffness: 320, damping: 20 }}
     >
-      {/* Top-edge glow on hover */}
-      <span className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
+      {/* Top-edge glow — fades in on hover and while active */}
+      <span
+        className={`pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent transition-opacity duration-500 group-hover:opacity-100 ${
+          active ? "opacity-100" : "opacity-0"
+        }`}
+      />
 
       <div className="aspect-[16/10] w-full overflow-hidden">
         <motion.img

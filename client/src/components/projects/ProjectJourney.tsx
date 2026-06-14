@@ -4,6 +4,7 @@ import {
   useScroll,
   useTransform,
   useReducedMotion,
+  useMotionValueEvent,
 } from "framer-motion";
 import { projects, type Project } from "@/data/projects";
 import ProjectCard from "./ProjectCard";
@@ -89,14 +90,62 @@ const ProjectJourney = ({ onOpen }: ProjectJourneyProps) => {
     offset: ["start start", "end end"],
   });
 
-  // The ball travels the full path, linear with scroll: y from 0 (top of the
-  // line) to height (bottom), with x following the wave. The bright trail is
-  // drawn up to the ball.
-  const ballY = useTransform(scrollYProgress, (p) => p * height);
+  // Dwell-on-scroll: instead of the ball moving linearly with scroll, its
+  // progress lingers ("dwells") over each project so every visitor sees all
+  // of them, then glides quickly between. We remap raw scroll progress to a
+  // piecewise-linear curve whose output holds flat at each project's center
+  // while the page keeps scrolling, producing a "stop for a beat" pause.
+  //
+  // Project i is centered at cᵢ = (i + 0.5) / n in both scroll and output
+  // space, so its plateau lands the ball exactly on node i — preserving the
+  // existing alignment with the card anchored at top = (i + 0.5) * segment.
+  //
+  // The half-width of each dwell band. Clamped so the bands stay disjoint and
+  // positive as projects are added (they would overlap once 1/n ≤ 2·dwell,
+  // i.e. n ≥ 8, which would make the input range non-monotonic and throw).
+  const dwell = Math.min(0.07, 0.45 / n);
+
+  const { inputRange, outputRange } = useMemo(() => {
+    // Reduced motion keeps the original linear mapping (no dwell pauses).
+    if (reduce) return { inputRange: [0, 1], outputRange: [0, 1] };
+    const input: number[] = [0];
+    const output: number[] = [0];
+    for (let i = 0; i < n; i++) {
+      const c = (i + 0.5) / n;
+      input.push(c - dwell, c + dwell);
+      output.push(c, c);
+    }
+    input.push(1);
+    output.push(1);
+    return { inputRange: input, outputRange: output };
+  }, [n, dwell, reduce]);
+
+  // A single remapped progress value drives both axes (and the trail) so the
+  // ball stays exactly on the wavy path and the trail tip stays glued to it,
+  // even while parked during a dwell.
+  const remapped = useTransform(scrollYProgress, inputRange, outputRange);
+  const ballY = useTransform(remapped, (r) => r * height);
   const ballX = useTransform(
-    scrollYProgress,
-    (p) => lineLeft + Math.sin(p * n * Math.PI) * amplitude,
+    remapped,
+    (r) => lineLeft + Math.sin(r * n * Math.PI) * amplitude,
   );
+
+  // The active project is the one whose dwell band currently contains the raw
+  // scroll position — the same window over which the ball is parked. Computed
+  // on raw scrollYProgress (the remap's input domain) so highlight and dwell
+  // share the same window; -1 when the ball is gliding between projects.
+  const [activeIndex, setActiveIndex] = useState(-1);
+  useMotionValueEvent(scrollYProgress, "change", (p) => {
+    let next = -1;
+    for (let i = 0; i < n; i++) {
+      const c = (i + 0.5) / n;
+      if (p >= c - dwell && p <= c + dwell) {
+        next = i;
+        break;
+      }
+    }
+    setActiveIndex((prev) => (prev === next ? prev : next));
+  });
 
   return (
     <div
@@ -127,7 +176,7 @@ const ProjectJourney = ({ onOpen }: ProjectJourneyProps) => {
             stroke="rgba(255,255,255,0.55)"
             strokeWidth={2}
             strokeLinecap="round"
-            style={{ pathLength: reduce ? 1 : scrollYProgress }}
+            style={{ pathLength: reduce ? 1 : remapped }}
           />
           {/* Connector from each node out to its card, plus the node ring */}
           {projects.map((p, i) => {
@@ -135,6 +184,7 @@ const ProjectJourney = ({ onOpen }: ProjectJourneyProps) => {
             const cx = lineLeft + amplitude * Math.sin((i + 0.5) * Math.PI);
             const cy = (i + 0.5) * segment;
             const cardEdge = isRight ? lineLeft + cardGap : lineLeft - cardGap;
+            const active = i === activeIndex;
             return (
               <g key={p.id}>
                 {!isMobile && (
@@ -147,13 +197,32 @@ const ProjectJourney = ({ onOpen }: ProjectJourneyProps) => {
                     strokeWidth={1}
                   />
                 )}
-                <circle
+                {/* Soft pulse ring while the ball dwells on this node */}
+                {active && !reduce && (
+                  <motion.circle
+                    cx={cx}
+                    cy={cy}
+                    fill="none"
+                    stroke="rgba(255,255,255,0.45)"
+                    strokeWidth={1.5}
+                    initial={{ r: 7, opacity: 0.6 }}
+                    animate={{ r: 22, opacity: 0 }}
+                    transition={{ duration: 1.6, repeat: Infinity, ease: "easeOut" }}
+                  />
+                )}
+                <motion.circle
                   cx={cx}
                   cy={cy}
-                  r={5}
                   fill="#0d0d0e"
-                  stroke="rgba(255,255,255,0.35)"
-                  strokeWidth={1.5}
+                  initial={false}
+                  animate={{
+                    r: active ? 8 : 5,
+                    stroke: active
+                      ? "rgba(255,255,255,0.9)"
+                      : "rgba(255,255,255,0.35)",
+                    strokeWidth: active ? 2 : 1.5,
+                  }}
+                  transition={{ type: "spring", stiffness: 320, damping: 18 }}
                 />
               </g>
             );
@@ -211,7 +280,11 @@ const ProjectJourney = ({ onOpen }: ProjectJourneyProps) => {
                 viewport={{ once: true, amount: 0.4, margin: "0px 0px -10% 0px" }}
                 transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               >
-                <ProjectCard project={project} onOpen={onOpen} />
+                <ProjectCard
+                  project={project}
+                  onOpen={onOpen}
+                  active={i === activeIndex}
+                />
               </motion.div>
             </div>
           );
