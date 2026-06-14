@@ -9,11 +9,20 @@
 
   body {
     @apply font-sans antialiased bg-black text-foreground;
-    background-color: #111111;
+    font-family: var(--font-sans);
+    background-color: #0d0d0e;
     overflow-x: hidden;
   }
 
   :root {
+    /*
+      Font stacks. Swap the first family in each to the licensed faces
+      (Grand Slang for serif, PP Neue Montreal for sans) when available;
+      nothing else in the codebase needs to change.
+    */
+    --font-sans: "Hanken Grotesk", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-serif: "Instrument Serif", "Hanken Grotesk", Georgia, serif;
+
     --foreground: 0 0% 100%;
     --background: 0 0% 7%;
     --card: 0 0% 10%;

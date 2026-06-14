@@ -1,109 +1,102 @@
 import { motion } from "framer-motion";
-import BackArrow from "@/components/BackArrow";
+import { Mail, Linkedin, Github, ArrowUpRight } from "lucide-react";
 
-const ContactItem = ({
-  icon,
-  platform,
-  username,
-  href,
-  delay = 0,
-}: {
-  icon: string;
-  platform: string;
-  username: string;
+interface Channel {
+  icon: typeof Mail;
+  label: string;
+  value: string;
   href: string;
-  delay?: number;
-}) => {
-  return (
-    <motion.a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      className="contact-item relative bg-[#161616] flex flex-col items-center justify-center p-12 rounded-xl border border-white/[0.06] h-[250px] cursor-pointer overflow-hidden group"
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{
-        delay: 0.3 + delay * 0.1,
-        duration: 0.6,
-        ease: [0.25, 0.46, 0.45, 0.94],
-      }}
-      whileHover={{
-        y: -6,
-        borderColor: "rgba(255,255,255,0.15)",
-      }}
-      whileTap={{ scale: 0.98, y: -2 }}
-    >
-      {/* Glow on hover */}
-      <motion.div
-        className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-      />
-      <motion.div
-        className="icon-container relative p-5 mb-5 rounded-full bg-white/[0.05] border border-white/[0.06] group-hover:border-white/[0.12] transition-colors duration-300"
-        whileHover={{ scale: 1.1, rotate: 3 }}
-        transition={{ type: "spring", stiffness: 300, damping: 15 }}
-      >
-        <i className={`${icon} text-2xl`}></i>
-      </motion.div>
-      <p className="relative text-center font-medium mb-3 text-lg">{platform}</p>
-      <p className="relative text-gray-400 text-base text-center break-all group-hover:text-gray-300 transition-colors duration-300">
-        {username}
-      </p>
-    </motion.a>
-  );
-};
+}
+
+const channels: Channel[] = [
+  {
+    icon: Mail,
+    label: "Email",
+    value: "arthurvanpetegem@outlook.com",
+    href: "mailto:arthurvanpetegem@outlook.com",
+  },
+  {
+    icon: Linkedin,
+    label: "LinkedIn",
+    value: "Arthur Van Petegem",
+    href: "https://www.linkedin.com/in/arthur-van-petegem-7b72b1323/",
+  },
+  {
+    icon: Github,
+    label: "GitHub",
+    value: "Gt-ace",
+    href: "https://github.com/Gt-ace",
+  },
+];
 
 const Contact = () => {
-  const contactItems = [
-    {
-      icon: "fab fa-linkedin",
-      platform: "LinkedIn",
-      username: "Arthur Van Petegem",
-      href: "https://www.linkedin.com/in/arthur-van-petegem-7b72b1323/",
-    },
-    {
-      icon: "fas fa-envelope",
-      platform: "Email",
-      username: "arthurvanpetegem@outlook.com",
-      href: "mailto:arthurvanpetegem@outlook.com",
-    },
-    {
-      icon: "fab fa-github",
-      platform: "GitHub",
-      username: "Gt-ace",
-      href: "https://github.com/Gt-ace",
-    },
-  ];
-
   return (
     <motion.section
       id="contact"
-      className="min-h-screen px-4 py-24 md:py-32"
+      className="flex min-h-screen items-center justify-center px-4 py-28"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className="max-w-6xl mx-auto">
-        <motion.div
-          className="flex items-center mb-12"
-          initial={{ opacity: 0, y: 10 }}
+      <div className="w-full max-w-xl">
+        <motion.p
+          className="mb-5 text-sm uppercase tracking-[0.28em] text-white/40"
+          initial={{ opacity: 0, y: 14 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
+          transition={{ delay: 0.15, duration: 0.7 }}
         >
-          <BackArrow />
-          <h2 className="text-3xl font-bold">Contact</h2>
-        </motion.div>
+          Contact
+        </motion.p>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {contactItems.map((item, index) => (
-            <ContactItem
-              key={index}
-              icon={item.icon}
-              platform={item.platform}
-              username={item.username}
-              href={item.href}
-              delay={index}
-            />
+        <motion.h1
+          className="font-serif text-5xl italic leading-[1.05] text-white sm:text-6xl"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.25, duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
+        >
+          Get in touch
+        </motion.h1>
+
+        <motion.p
+          className="mt-6 max-w-md text-base leading-relaxed text-white/55"
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4, duration: 0.8 }}
+        >
+          The fastest way to reach me is email. For anything else, I am one
+          message away on the channels below.
+        </motion.p>
+
+        <div className="mt-12 border-t border-white/[0.08]">
+          {channels.map(({ icon: Icon, label, value, href }, i) => (
+            <motion.a
+              key={label}
+              href={href}
+              target={href.startsWith("http") ? "_blank" : undefined}
+              rel={href.startsWith("http") ? "noopener noreferrer" : undefined}
+              className="group flex items-center justify-between gap-6 border-b border-white/[0.08] py-6 focus:outline-none focus-visible:bg-white/[0.03]"
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 + i * 0.1, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+              whileHover={{ x: 4 }}
+              whileTap={{ x: 1 }}
+            >
+              <div className="flex items-center gap-5">
+                <span className="flex h-11 w-11 flex-none items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.03] text-white/50 transition-colors duration-300 group-hover:border-white/20 group-hover:text-white/90">
+                  <Icon className="h-5 w-5" />
+                </span>
+                <span>
+                  <span className="block text-xs uppercase tracking-[0.18em] text-white/40">
+                    {label}
+                  </span>
+                  <span className="mt-0.5 block break-all text-lg text-white/85 transition-colors duration-200 group-hover:text-white">
+                    {value}
+                  </span>
+                </span>
+              </div>
+              <ArrowUpRight className="h-5 w-5 flex-none text-white/25 transition-all duration-200 group-hover:text-white/80 group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+            </motion.a>
           ))}
         </div>
       </div>

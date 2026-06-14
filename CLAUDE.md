@@ -16,7 +16,13 @@ npm run db:push      # Push Drizzle schema changes to PostgreSQL
 
 Full-stack TypeScript portfolio website. Single Express server (port 5000) serves both the API and the React SPA.
 
-**Client** (`client/`): React 18 + wouter routing + TanStack React Query + Tailwind CSS + shadcn/ui (Radix). Framer Motion for animations. Pages: Home, Projects, Contact, 404. `ParticleBackground` component renders on all pages.
+**Client** (`client/`): React 18 + wouter routing + TanStack React Query + Tailwind CSS + shadcn/ui (Radix). Framer Motion for animations. Routes: Home (`/`), Contact (`/contact`), 404. `ParticleBackground` component renders on all pages.
+
+**Landing page** (`pages/Home.tsx`): one long scroll. Hero, then the project journey (`components/projects/ProjectJourney.tsx`): a white ball follows a wavy SVG path driven by `useScroll`, with cards alternating left/right at the wave extremes. Clicking a card opens `ProjectModal`. The same sine function draws the path and positions the ball, so they stay aligned; project `i` sits at scroll position `(i + 0.5) / n`. `/projects` redirects to `/`; the Navbar "Projects" item scrolls to the `#projects` section.
+
+**Project data** (`data/projects.ts`): single source of truth for the cards. Add a project by dropping a preview image in `attached_assets/projects/`, importing it, and appending an entry. Order is top-to-bottom; sides alternate automatically.
+
+**Fonts**: highlights use a serif italic (`--font-serif`), body uses a grotesque sans (`--font-sans`), both defined in `index.css` and mapped in `tailwind.config.ts` (`font-serif` / `font-sans`). Currently Instrument Serif and Hanken Grotesk stand in for the licensed Grand Slang and PP Neue Montreal; swapping in the real faces is a one-line change to each CSS variable.
 
 **Server** (`server/`): Express with session auth (Passport). In dev, Vite runs as Express middleware for HMR. In production, serves pre-built static files from `dist/public/`. API routes under `/api/*`. Storage layer uses an interface pattern (`IStorage`) with in-memory implementation (`MemStorage`).
 

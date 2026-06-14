@@ -1,18 +1,15 @@
-### Summmit x Hack 2026 Inventory Management
+## Prompt
+I want to create a scrolling animations which reveals my personal projects. It should extend the exiting landing page with the same background. It should be a white ball that moves along a wavy vertical line when scrolling - smooth and responsive. On each side, alternating left and right, appear my project cards. Medium sized, when clicking it opens a preview with a short description of what it is, how it is build and a link to actually visit it. I want to change the font on the entire portfolio to 'Serif Typeface (Italic) Grand Slang (Italic)' for highlights and the rest Sans-Serif Typeface PP Neue Montrea. @projects.md contains the projects I want on there. Generally it should be a minimalistic and stunning portfolio page. I believe WebGL, framer motion, Three.js and GSAP are good for this, tough you're free to make design decisions on every step. Make the website easily expandable and maintainable with new projects and updating exiting projects. Do not use any em-dashes or emojies anywhere. Make the entire website user-friendly, clean and premium on every detail. Use the active design skills and the impeccable plugin. 
 
-A real-time inventory management system built for START Summit x Hack 2026, enabling volunteers to request supplies via QR code while coordinators and runners fulfill and deliver orders — replacing ad-hoc logistics with a structured, live-updating workflow. Built with Next.js 16, SQLite, and server actions for a zero-auth, mobile-first experience deployable via Docker.
+## Projects
+### START Summit x Hack Volunteer Platform
+For information, go to "\\wsl.localhost\Ubuntu\home\gtace\volunteer-platform"
+preview: volunteer-platform.avif
 
-URL: inventory.startglobal.org
+### Crux
+For information, go to "\\wsl.localhost\Ubuntu\home\gtace\crux"
+preview: crux.avif
 
-### Summit x Hack 2026 Elevator Pitch
-
-URL: https://www.startglobal.org/start-summit
-
-  ▎ Summit Pitch — A real-time pitch recording booth built for START Summit 2026 that lets founders record 60-second
-  elevator pitches and receive their videos by email. A Next.js web app synchronizes two tablets and a laptop via
-  WebSockets, coordinating QR-based check-in, a synced countdown timer, OBS-controlled video recording, and an automated
-   transcoding-and-delivery pipeline — replacing what would otherwise be a manual, error-prone booth workflow.
-
-   3 Pictures are in /elevator-pitch-pictures
-
-   
+### Amber
+For information, go to "\\wsl.localhost\Ubuntu\home\gtace\Amber"
+preview: amber.avif

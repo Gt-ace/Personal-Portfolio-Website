@@ -19,6 +19,26 @@ const Navbar = () => {
 
   const handleNavClick = (page: string, path: string) => {
     setCurrentPage(page);
+
+    // Projects is a section on the landing page, not a route.
+    if (page === "projects") {
+      if (window.location.pathname === "/") {
+        document
+          .getElementById("projects")
+          ?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        sessionStorage.setItem("scrollTo", "projects");
+        setLocation("/");
+      }
+      return;
+    }
+
+    // Home scrolls to top when already there.
+    if (page === "home" && window.location.pathname === "/") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
+
     setLocation(path);
   };
 

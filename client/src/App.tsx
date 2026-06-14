@@ -1,11 +1,10 @@
 import { useState, useEffect } from "react";
-import { Route, Switch, useLocation } from "wouter";
+import { Route, Switch, Redirect, useLocation } from "wouter";
 import { AnimatePresence } from "framer-motion";
 import { Toaster } from "@/components/ui/toaster";
 import Navbar from "@/components/Navbar";
 import ParticleBackground from "@/components/ParticleBackground";
 import Home from "@/pages/Home";
-import Projects from "@/pages/Projects";
 import Contact from "@/pages/Contact";
 import NotFound from "@/pages/not-found";
 
@@ -27,7 +26,10 @@ function App() {
           {mounted && (
             <Switch location={location} key={location}>
               <Route path="/" component={Home} />
-              <Route path="/projects" component={Projects} />
+              {/* Projects now live as a section on the landing page. */}
+              <Route path="/projects">
+                {() => <Redirect to="/" />}
+              </Route>
               <Route path="/contact" component={Contact} />
               <Route component={NotFound} />
             </Switch>
