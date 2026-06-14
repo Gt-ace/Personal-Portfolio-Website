@@ -80,37 +80,23 @@ const ProjectJourney = ({ onOpen }: ProjectJourneyProps) => {
     return d.trim();
   }, [width, lineLeft, amplitude, n, height]);
 
-  // Track viewport height so the ball can sit at the screen's vertical center.
-  const [vh, setVh] = useState(() =>
-    typeof window !== "undefined" ? window.innerHeight : 0,
-  );
-  useLayoutEffect(() => {
-    const update = () => setVh(window.innerHeight);
-    update();
-    window.addEventListener("resize", update);
-    return () => window.removeEventListener("resize", update);
-  }, []);
-
+  // Progress runs from the section top reaching the viewport top, to the
+  // section bottom reaching the viewport bottom. The ball then descends
+  // naturally through the viewport and covers the whole line: top at the
+  // start, bottom at the end.
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   });
 
-  // Pin the ball to the vertical center of the screen. Its position within the
-  // section is the current scroll offset plus half a screen, so it stays put on
-  // screen while the wavy line scrolls past it. x follows the path at that
-  // height; the bright trail is drawn up to the same point.
-  const ballY = useTransform(
+  // The ball travels the full path, linear with scroll: y from 0 (top of the
+  // line) to height (bottom), with x following the wave. The bright trail is
+  // drawn up to the ball.
+  const ballY = useTransform(scrollYProgress, (p) => p * height);
+  const ballX = useTransform(
     scrollYProgress,
-    (p) => p * (height - vh) + vh / 2,
+    (p) => lineLeft + Math.sin(p * n * Math.PI) * amplitude,
   );
-  const progressT = (p: number) =>
-    Math.min(1, Math.max(0, (p * (height - vh) + vh / 2) / height));
-  const ballX = useTransform(scrollYProgress, (p) => {
-    const t = progressT(p);
-    return lineLeft + Math.sin(t * n * Math.PI) * amplitude;
-  });
-  const drawT = useTransform(scrollYProgress, (p) => progressT(p));
 
   return (
     <div
@@ -141,7 +127,7 @@ const ProjectJourney = ({ onOpen }: ProjectJourneyProps) => {
             stroke="rgba(255,255,255,0.55)"
             strokeWidth={2}
             strokeLinecap="round"
-            style={{ pathLength: reduce ? 1 : drawT }}
+            style={{ pathLength: reduce ? 1 : scrollYProgress }}
           />
           {/* Connector from each node out to its card, plus the node ring */}
           {projects.map((p, i) => {
